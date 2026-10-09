@@ -1,0 +1,36 @@
+{
+  "name": "The Go To \u2014 Daily Curated News",
+  "short_name": "The Go To",
+  "description": "Your daily personalized newspaper for Kenner, Metairie, New Orleans, Tech, Aviation, Drones, and Automotive.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fbfaf6",
+  "theme_color": "#b91c1c",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": [
+    "news",
+    "productivity",
+    "magazines"
+  ]
+}

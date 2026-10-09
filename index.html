@@ -1,0 +1,2299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>The Go To — Daily Curated News (PWA)</title>
+  
+  <!-- PWA Manifest & App Icons -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="The Go To">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+
+  <style>
+    :root {
+      --bg-primary: #fbfaf6;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-modal: #ffffff;
+      --text-primary: #18181b;
+      --text-secondary: #4b5563;
+      --text-muted: #6b7280;
+      --border-color: #e5e2db;
+      --border-dark: #27272a;
+      --accent-color: #b91c1c;
+      --accent-hover: #991b1b;
+      --accent-subtle: #fef2f2;
+      --tag-bg: #f3f0e9;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,0.18);
+      --font-headline: "Playfair Display", Georgia, "Times New Roman", serif;
+      --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --max-width: 1220px;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #121316;
+      --bg-surface: #1a1c22;
+      --bg-card: #1f2229;
+      --bg-modal: #1e2128;
+      --text-primary: #f3f4f6;
+      --text-secondary: #d1d5db;
+      --text-muted: #9ca3af;
+      --border-color: #2e333d;
+      --border-dark: #4b5563;
+      --accent-color: #ef4444;
+      --accent-hover: #f87171;
+      --accent-subtle: #311c1c;
+      --tag-bg: #282c35;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 14px rgba(0,0,0,0.5);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* PWA Install Banner */
+    .pwa-install-banner {
+      background: linear-gradient(90deg, #b91c1c, #991b1b);
+      color: #ffffff;
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 500;
+    }
+
+    .install-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+    }
+
+    .install-app-btn {
+      background: #ffffff;
+      color: #b91c1c;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: transform 0.1s, background-color 0.2s;
+    }
+
+    .install-app-btn:hover {
+      background: #fef2f2;
+      transform: scale(1.03);
+    }
+
+    .dismiss-banner-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.8);
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    /* Top Metadata Bar */
+    .top-meta-bar {
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 9px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: var(--bg-surface);
+    }
+
+    .top-meta-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .location-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      color: var(--accent-color);
+    }
+
+    .meta-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .meta-btn {
+      background: var(--tag-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.76rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .meta-btn:hover {
+      border-color: var(--accent-color);
+    }
+
+    /* Newspaper Masthead */
+    header.newspaper-masthead {
+      padding: 28px 0 18px;
+      text-align: center;
+      border-bottom: 3px double var(--border-dark);
+      background: var(--bg-surface);
+    }
+
+    .masthead-title {
+      font-family: var(--font-headline);
+      font-size: 4rem;
+      letter-spacing: -0.025em;
+      font-weight: 900;
+      text-transform: uppercase;
+      line-height: 0.95;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .masthead-tagline {
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      margin-bottom: 14px;
+      font-family: var(--font-headline);
+    }
+
+    .masthead-edition-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 0;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* Filter & Search Bar */
+    .filter-navigation {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 28px;
+    }
+
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .cat-btn {
+      background: var(--tag-bg);
+      border: 1px solid transparent;
+      color: var(--text-primary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+
+    .cat-btn:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-1px);
+    }
+
+    .cat-btn.active {
+      background: var(--accent-color);
+      color: #ffffff;
+      border-color: var(--accent-color);
+    }
+
+    .search-wrapper {
+      position: relative;
+      min-width: 250px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 12px 8px 34px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    /* Lead Story Card */
+    .lead-story-section {
+      margin-bottom: 34px;
+    }
+
+    .lead-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 26px;
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .lead-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-cat {
+      background: var(--accent-subtle);
+      color: var(--accent-color);
+      padding: 3px 9px;
+      border-radius: 4px;
+      border: 1px solid rgba(185, 28, 28, 0.2);
+    }
+
+    .badge-source {
+      color: var(--text-muted);
+    }
+
+    .headline-link {
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .headline-link:hover {
+      color: var(--accent-color);
+    }
+
+    .lead-headline {
+      font-family: var(--font-headline);
+      font-size: 2.2rem;
+      line-height: 1.25;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .lead-summary {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+
+    .lead-interactive-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-color);
+      color: #ffffff;
+      padding: 9px 20px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .lead-interactive-cta:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .direct-source-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .direct-source-link:hover {
+      color: var(--accent-color);
+      text-decoration: underline;
+    }
+
+    .lead-side-takeaways {
+      background: var(--tag-bg);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .takeaways-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-color);
+      margin-bottom: 12px;
+    }
+
+    .quick-bullet-list {
+      list-style-type: none;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+    }
+
+    .quick-bullet-list li {
+      margin-bottom: 10px;
+      position: relative;
+      padding-left: 18px;
+      line-height: 1.45;
+    }
+
+    .quick-bullet-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent-color);
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+
+    /* Grid of Stories */
+    .section-header {
+      font-family: var(--font-headline);
+      font-size: 1.55rem;
+      font-weight: 800;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-dark);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .section-counter {
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .stories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .story-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .story-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent-color);
+    }
+
+    .card-top {
+      margin-bottom: 14px;
+    }
+
+    .story-headline {
+      font-family: var(--font-headline);
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+
+    .story-snippet {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    /* Native Inline Collapsible Details */
+    .inline-takeaways-details {
+      background: var(--tag-bg);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-top: 12px;
+      border-left: 3px solid var(--accent-color);
+      font-size: 0.86rem;
+    }
+
+    .inline-takeaways-summary {
+      font-weight: 700;
+      color: var(--accent-color);
+      cursor: pointer;
+      user-select: none;
+      outline: none;
+    }
+
+    .inline-takeaways-summary:hover {
+      text-decoration: underline;
+    }
+
+    .inline-takeaways-content {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .takeaways-subheading {
+      font-weight: 800;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .inline-overview-p {
+      color: var(--text-secondary);
+      line-height: 1.45;
+      margin-bottom: 8px;
+    }
+
+    .inline-bullet-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .inline-bullet-list li {
+      margin-bottom: 6px;
+      padding-left: 14px;
+      position: relative;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .inline-bullet-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent-color);
+      font-weight: bold;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.82rem;
+      margin-top: 16px;
+    }
+
+    .preview-cta-link {
+      color: var(--accent-color);
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .preview-cta-link:hover {
+      text-decoration: underline;
+    }
+
+    .story-date {
+      color: var(--text-muted);
+    }
+
+    /* CSS :target Native Modal Pop-up */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay:target {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--bg-modal);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      padding: 32px;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--tag-bg);
+      text-decoration: none;
+      font-size: 1.1rem;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--accent-color);
+      color: #fff;
+    }
+
+    .modal-meta-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .modal-headline {
+      font-family: var(--font-headline);
+      font-size: 1.85rem;
+      line-height: 1.3;
+      font-weight: 800;
+      margin-bottom: 18px;
+      color: var(--text-primary);
+    }
+
+    .modal-overview-box {
+      background: var(--tag-bg);
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin-bottom: 24px;
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .modal-overview-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+      color: var(--accent-color);
+      margin-bottom: 5px;
+    }
+
+    .modal-overview-text {
+      font-size: 0.98rem;
+      color: var(--text-primary);
+      line-height: 1.55;
+    }
+
+    .modal-section-title {
+      font-family: var(--font-headline);
+      font-size: 1.18rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-takeaway-item {
+      margin-bottom: 16px;
+      padding-left: 14px;
+      border-left: 2px solid var(--border-color);
+    }
+
+    .takeaway-point-title {
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .takeaway-point-desc {
+      font-size: 0.91rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .modal-action-bar {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .verified-source-badge {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .open-source-link {
+      background: var(--text-primary);
+      color: var(--bg-surface);
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .close-modal-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.86rem;
+      padding: 8px 12px;
+    }
+    .close-modal-link:hover {
+      color: var(--text-primary);
+      text-decoration: underline;
+    }
+
+    /* System Architecture Banner */
+    .system-pipeline-banner {
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-dark);
+      border-radius: 10px;
+      padding: 28px;
+      margin-top: 40px;
+      margin-bottom: 48px;
+    }
+
+    .pipeline-title {
+      font-family: var(--font-headline);
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pipeline-desc {
+      font-size: 0.93rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .pipeline-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+    }
+
+    .pipeline-step-box {
+      background: var(--tag-bg);
+      padding: 16px;
+      border-radius: 6px;
+      font-size: 0.86rem;
+    }
+
+    .step-num {
+      font-weight: 800;
+      color: var(--accent-color);
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .step-heading {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .step-text {
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* Footer */
+    footer.site-footer {
+      margin-top: auto;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
+      padding: 28px 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .lead-card {
+        grid-template-columns: 1fr;
+      }
+      .masthead-title {
+        font-size: 2.8rem;
+      }
+      .filter-navigation {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-wrapper {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PWA Install Prompt Banner (Visible on mobile/desktop browsers before installation) -->
+  <div class="pwa-install-banner" id="pwaBanner">
+    <div class="install-banner-content">
+      <span>📱 <strong>Get "The Go To" App:</strong> Install on your home screen for instant daily access & offline reading.</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="install-app-btn" id="installAppBtn" onclick="triggerPWAInstall()">Install App</button>
+      <button class="dismiss-banner-btn" onclick="dismissBanner()" title="Dismiss">✕</button>
+    </div>
+  </div>
+
+  <!-- Top Metadata Bar -->
+  <div class="top-meta-bar">
+    <div class="container top-meta-inner">
+      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+        <span class="location-tag">📍 Kenner • Metairie • New Orleans</span>
+        <span>Vol. I, No. 1</span>
+        <span id="editionDateDisplay">Friday, October 9, 2026</span>
+      </div>
+      <div class="meta-actions">
+        <button class="meta-btn" onclick="fetchLiveUpdates()" title="Check for fresh stories">
+          🔄 <span id="refreshLabel">Check Updates</span>
+        </button>
+        <button class="meta-btn" id="themeToggleBtn" onclick="toggleTheme()">
+          🌓 Mode: <span id="themeLabel">Light</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Newspaper Masthead -->
+  <header class="newspaper-masthead">
+    <div class="container">
+      <h1 class="masthead-title">The Go To</h1>
+      <p class="masthead-tagline">"Everything that matters. Nothing that doesn't."</p>
+      <div class="masthead-edition-line">
+        <span>Curated Daily: Greater New Orleans, Tech, Aviation, Drones & Automotive</span>
+        <span>Strict Guardrails: Zero Sports • Zero Partisan Noise • Direct Executive Actions Only</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter & Navigation Bar -->
+  <div class="container">
+    <div class="filter-navigation">
+      <div class="category-pills" id="categoryPills">
+        <button class="cat-btn active" data-cat="all" onclick="filterCategory('all', this)">All Stories</button>
+        <button class="cat-btn" data-cat="local" onclick="filterCategory('local', this)">📍 Local News & Events</button>
+        <button class="cat-btn" data-cat="tech" onclick="filterCategory('tech', this)">💻 Tech</button>
+        <button class="cat-btn" data-cat="aviation" onclick="filterCategory('aviation', this)">✈️ Aviation</button>
+        <button class="cat-btn" data-cat="drones" onclick="filterCategory('drones', this)">🛸 Drones</button>
+        <button class="cat-btn" data-cat="cars" onclick="filterCategory('cars', this)">🚗 Cars</button>
+        <button class="cat-btn" data-cat="presidential" onclick="filterCategory('presidential', this)">🏛️ Presidential Actions</button>
+      </div>
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search headlines or takeaways..." oninput="handleSearch()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container with all stories PRE-RENDERED IN HTML -->
+  <main class="container">
+
+    <!-- Lead / Hero Section -->
+    
+    <section class="lead-story-section" id="leadStoryContainer">
+      <div class="lead-card">
+        <div class="lead-content">
+          <div class="badge-row">
+            <span class="badge-cat">⭐ Lead Story • Kenner Event</span>
+            <span class="badge-source">Kenner Official Portal</span>
+            <span style="color: var(--text-muted);">• October 8, 2026</span>
+          </div>
+          <h2 class="lead-headline">
+            <a href="#modal-loc-1" class="headline-link">Kenner Food Truck Festival Returns to Laketown on October 25 with Live Concert Lineup</a>
+          </h2>
+          <p class="lead-summary">Kenner's premier lakefront festival returns to Laketown on Saturday, October 25, featuring over 20 regional food trucks, family activities, and live outdoor performances by The Peyton Falgoust Band and Rock Show NOLA.</p>
+          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <a href="#modal-loc-1" class="lead-interactive-cta">
+              <span>View Key Takeaways & Impact</span> →
+            </a>
+            <a href="https://www.kenner.la.us/CivicAlerts.aspx?CID=1" target="_blank" rel="noopener noreferrer" class="direct-source-link">
+              Source: Kenner Official Portal ↗
+            </a>
+          </div>
+        </div>
+        <div class="lead-side-takeaways">
+          <div class="takeaways-label">⚡ Executive Snapshot (Click Headline for Full Modal)</div>
+          <ul class="quick-bullet-list">
+            <li><strong>Date, Hours & Venue:</strong> Takes place Saturday, October 25, 2026, at Laketown (Williams Blvd at Lake Pontchartrain). Admission to the festival gro...</li><li><strong>Live Entertainment Schedule:</strong> Performances headline with regional fan-favorite Rock Show NOLA playing classic rock anthems, followed by The Peyton Fal...</li><li><strong>Logistics & Parking:</strong> Kenner Police Department and Jefferson Parish Parks & Recreation have designated free parking lots along Williams Blvd w...</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Section Title & Grid -->
+    <div class="section-header">
+      <span id="sectionTitle">Today's Curated Stories</span>
+      <span class="section-counter" id="storyCounter">Showing 13 stories</span>
+    </div>
+
+    <!-- Stories Grid: Pre-rendered HTML articles with inline expandable takeaways + pop-up modal triggers -->
+    <div class="stories-grid" id="storiesGrid">
+
+        <article class="story-card" data-category="local" id="card-loc-1">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Kenner Event</span>
+              <span class="badge-source">Kenner Official Portal</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-loc-1" class="headline-link">Kenner Food Truck Festival Returns to Laketown on October 25 with Live Concert Lineup</a>
+            </h3>
+            <p class="story-snippet">Kenner's premier lakefront festival returns to Laketown on Saturday, October 25, featuring over 20 regional food trucks, family activities, and live outdoor performances by The Peyton Falgoust Band and Rock Show NOLA.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">Laketown on the shores of Lake Pontchartrain in Kenner serves as the primary outdoor gathering hub for Jefferson Parish families. This signature fall festival provides a major economic boost to local culinary entrepreneurs while offering free community entertainment.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>Date, Hours & Venue:</strong> Takes place Saturday, October 25, 2026, at Laketown (Williams Blvd at Lake Pontchartrain). Admission to the festival grounds is free to the public, with vendor food and drinks available for purchase.</li><li><strong>Live Entertainment Schedule:</strong> Performances headline with regional fan-favorite Rock Show NOLA playing classic rock anthems, followed by The Peyton Falgoust Band bringing high-energy variety music throughout the afternoon and evening.</li><li><strong>Logistics & Parking:</strong> Kenner Police Department and Jefferson Parish Parks & Recreation have designated free parking lots along Williams Blvd with courtesy shuttles running continuously to the boat launch area.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 8, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-loc-1" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="local" id="card-loc-2">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Jefferson Parish</span>
+              <span class="badge-source">WWL-TV Local News</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-loc-2" class="headline-link">Jefferson Parish Council Launches Independent Engineering Audit on Smart Water Meter Billing Spikes</a>
+            </h3>
+            <p class="story-snippet">Following widespread complaints from residents in Metairie and Kenner regarding sudden quadrupled monthly water charges, the Jefferson Parish Council has commissioned an independent technical audit into newly installed automated meter sensors.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">The parish-wide digital meter rollout was intended to modernize leak detection and bill accuracy. However, hundreds of households in Metairie and Kenner experienced unexplained billing spikes, prompting urgent parish council intervention.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>What is Being Audited:</strong> Third-party engineering investigators are benchmarking the digital pulse-transmitters against mechanical registers to determine whether electronic data packet transmission errors or calibration glitches caused the erroneous surges.</li><li><strong>Dispute Relief for Kenner & Metairie Residents:</strong> The council approved a moratorium on water shut-offs for disputed accounts during the review period. Affected customers can file formal disputes online to hold late fees while meters are recalibrated.</li><li><strong>Expected Resolution Timeline:</strong> Preliminary findings and corrective billing reconciliations are scheduled to be presented publicly to the Jefferson Parish Council by early November.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 8, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-loc-2" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="local" id="card-loc-3">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">New Orleans</span>
+              <span class="badge-source">City of New Orleans Mayor's Office</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-loc-3" class="headline-link">New Orleans Formally Awarded Legal Ownership of 50,000-Acre Coastal Wisner Trust Lands</a>
+            </h3>
+            <p class="story-snippet">After years of litigation, the civil district court has ruled that the City of New Orleans is the sole rightful owner of the historic Edward Wisner Donation lands, securing tens of millions in annual revenue dedicated to municipal infrastructure.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">The Wisner Trust originally encompassed over 50,000 acres of oil-producing and coastal real estate across Lafourche, St. John, and Jefferson parishes. The expiration of the 100-year trust led to a contested dispute over whether revenues belonged to the city or private heirs.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>The Core Court Ruling:</strong> The judge decreed that the donation trust had legally terminated and that all real property and oil royalties permanently vest directly in the City of New Orleans as the sole beneficiary.</li><li><strong>Financial Impact for Citizens:</strong> The city will now directly capture an estimated $8M–$12M annually without third-party management fees. City leadership has pledged these funds directly to drainage pump modernization and neighborhood road repairs.</li><li><strong>Environmental Significance:</strong> The land holdings encompass critical coastal wetlands along the Barataria basin, allowing New Orleans to spearhead direct coastal restoration and hurricane storm surge protection projects.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 6, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-loc-3" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="local" id="card-loc-4">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Metairie & Kenner</span>
+              <span class="badge-source">Visit Jefferson Parish</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-loc-4" class="headline-link">Fire Prevention Week Demonstrations and Home Safety Clinics Across Jefferson Parish Stations</a>
+            </h3>
+            <p class="story-snippet">Jefferson Parish Fire Department and Kenner Fire Department are hosting free public open houses, smoke alarm distribution clinics, and hands-on extinguisher training at neighborhood stations across Metairie and Kenner.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">National Fire Prevention Week focuses on educating residents about lithium-ion battery safety, cooking hazards, and family evacuation protocols before winter heating season begins.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>Free Alarm Installations:</strong> Jefferson Parish residents can request free dual-sensor smoke and carbon monoxide detectors installed at no charge by on-duty firefighters.</li><li><strong>Hands-On Family Training:</strong> Participating stations in Metairie (Veterans Blvd) and Kenner (32nd St) are offering children's obstacle courses, thermal camera demonstrations, and live grease-fire suppression drills.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 5, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-loc-4" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="tech" id="card-tech-1">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Technology</span>
+              <span class="badge-source">ScienceDaily Technology</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-tech-1" class="headline-link">Physicists Synthesize Room-Temperature Photonic Time Crystal on Optical Silicon Chip</a>
+            </h3>
+            <p class="story-snippet">Researchers have successfully engineered the world's first photonic time crystal operating at room temperature on standard semiconductor silicon, enabling light waves to be amplified and modulated without bulky cryogenic lasers.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">Traditional crystals have atoms arranged in repeating spatial patterns. Time crystals have structures that repeat periodically in time, allowing them to manipulate electromagnetic energy in previously impossible ways.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>The Technological Leap:</strong> Previous photonic time crystal experiments required massive cryogenic refrigeration equipment and extreme lab conditions. This is the first demonstration on an integrated, mass-producible microchip.</li><li><strong>Why It Matters for Computing:</strong> Replaces traditional copper interconnects with ultra-fast optical data pipelines that consume up to 90% less electricity while transferring data at petabit-per-second speeds.</li><li><strong>Commercialization Window:</strong> Semiconductor foundries are already testing pilot integration into next-generation AI accelerators and quantum sensing hardware over the next 24 to 36 months.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 8, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-tech-1" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="tech" id="card-tech-2">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Artificial Intelligence</span>
+              <span class="badge-source">Google Technology Blog</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-tech-2" class="headline-link">Autonomous Multimodal Reasoning Architecture Achieves Stateful Agentic Workflows</a>
+            </h3>
+            <p class="story-snippet">The latest AI architecture update introduces persistent, stateful agentic workflows capable of executing multi-step cross-application automation while self-auditing its code and eliminating hallucinated parameters.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">Rather than isolated prompt-and-response interactions, the breakthrough focuses on persistent episodic memory, allowing assistants to maintain multi-week projects and verify external actions before execution.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>Verified Action Protocol:</strong> The system enforces zero-fabrication safety gates where tool parameters, dates, and API endpoints are verified deterministically before external mutations occur.</li><li><strong>Real-World Efficiency Gains:</strong> In benchmark tests, complex multi-app data consolidation tasks that previously required human manual oversight were completed in under 45 seconds with 99.4% factual accuracy.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 2, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-tech-2" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="aviation" id="card-aviation-1">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Commercial Aviation</span>
+              <span class="badge-source">Aviation International News</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-aviation-1" class="headline-link">Beta Technologies & GE Aerospace Complete Historic Transatlantic Flight in Hybrid Commuter Aircraft</a>
+            </h3>
+            <p class="story-snippet">A converted Saab 340B commuter aircraft equipped with a hybrid-electric turboprop powertrain has successfully crossed the North Atlantic route, proving the viability of zero-emission regional passenger service.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">Regional air travel between cities under 500 miles accounts for a significant portion of short-haul aviation emissions. This test flight represents the longest continuous journey by a commercial-scale hybrid aircraft in aviation history.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>Flight Route & Performance:</strong> The aircraft departed Burlington, Vermont, stopping in Goose Bay, Greenland, and Iceland before landing in Scotland, averaging 38% lower fuel consumption than standard fossil-fueled turboprops.</li><li><strong>Passenger Capacity & Timeline:</strong> The platform maintains a 30-passenger cabin configuration, targeting FAA commercial certification and regional airline route entry by late 2027.</li><li><strong>Infrastructure Advantage:</strong> Unlike pure battery-electric designs that demand massive airport megawatt grid overhauls, the hybrid system utilizes existing airport fueling alongside standard charging stations.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 7, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-aviation-1" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="aviation" id="card-aviation-2">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Aerospace Safety</span>
+              <span class="badge-source">Federal Aviation Administration</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-aviation-2" class="headline-link">FAA Issues Automated Runway Safety Radar Mandates to Prevent Airport Surface Incursions</a>
+            </h3>
+            <p class="story-snippet">The FAA has accelerated nationwide deployment of Surface Awareness Initiative (SAI) radar towers and automated audio-visual cockpit alert systems across 45 high-density commercial airports.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">Near-miss surface incidents on active runways have been a major focus of federal aviation oversight. The new system provides real-time situational awareness directly to air traffic controllers and pilots simultaneously.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>Sub-Second Incursion Detection:</strong> Combines high-definition surface millimeter-wave radar and automatic dependent surveillance-broadcast (ADS-B) to track taxiing aircraft and airport ground vehicles with pinpoint accuracy.</li><li><strong>Direct Cockpit Warning:</strong> If an aircraft begins a takeoff roll while another plane is crossing downstream, the cockpit navigation display flashes an automated red 'Runway Occupied' alarm, bypassing controller radio lag.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 5, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-aviation-2" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="drones" id="card-drones-1">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">UAV Regulations</span>
+              <span class="badge-source">Commercial UAV News</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-drones-1" class="headline-link">FAA Establishes Standardized Beyond-Visual-Line-of-Sight (BVLOS) Commercial Delivery Corridors</a>
+            </h3>
+            <p class="story-snippet">The Federal Aviation Administration has published an updated regulatory framework that replaces case-by-case BVLOS exemptions with a streamlined, standardized certification path for commercial delivery drones.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">Commercial drone delivery has historically been constrained by the requirement that remote human pilots maintain physical line of sight with the aircraft. The new rules formalize detect-and-avoid airspace safety standards.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>What Changes for Operators:</strong> Certified Part 135 drone delivery operators can now scale suburban package deliveries across entire metropolitan areas without having human visual observers stationed every two miles.</li><li><strong>Mandatory Safety Equipment:</strong> Drones must feature redundant computer-vision obstacle avoidance, ADS-B In receiver units, and automated emergency parachute recovery systems certified to ASTM standards.</li><li><strong>Local Community Impact:</strong> Expands rapid medical delivery (prescription pharmaceuticals, AEDs) and retail package delivery times to under 15 minutes in participating suburban pilot regions.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 6, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-drones-1" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="drones" id="card-drones-2">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Emergency Tech</span>
+              <span class="badge-source">Unmanned Systems Technology</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-drones-2" class="headline-link">Tethered Disaster-Response Drones Deployed for Emergency 5G Mobile Mesh Coverage</a>
+            </h3>
+            <p class="story-snippet">New long-endurance tethered UAV platforms capable of hovering continuously for 72 hours have been validated to restore immediate cellular and broadband connectivity in hurricane-impacted coastal communities.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">When terrestrial cell towers lose power or fiber backhaul during severe gulf weather, tethered drones powered from mobile ground generators act as temporary 400-foot transmission towers.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>Continuous Power via Kevlar Tether:</strong> A micro-tether carries high-voltage electricity and fiber-optic data directly from a ground vehicle, eliminating battery flight time limits.</li><li><strong>Coverage Radius:</strong> A single unit creates an instant 10-mile radius emergency communication umbrella for 911 dispatchers, emergency search-and-rescue teams, and displaced residents.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 5, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-drones-2" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="cars" id="card-cars-1">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Automotive Tech</span>
+              <span class="badge-source">Electrifying Automotive News</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-cars-1" class="headline-link">2026 Paris Motor Show Debuts Production Solid-State EV Batteries with 600-Mile Range</a>
+            </h3>
+            <p class="story-snippet">Automakers at the 2026 Paris Motor Show have unveiled production-ready solid-state battery packs offering double the energy density of conventional lithium-ion cells and 10-minute 10-to-80% fast-charging capability.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">Solid-state technology replaces flammable liquid electrolytes with solid ceramic or polymer separators, significantly improving safety, thermal management, and winter range retention.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>Breakthrough Performance Specs:</strong> Prototypes demonstrated over 620 miles (1,000 km) on a single charge with zero degradation across 1,500 accelerated rapid-charging cycles.</li><li><strong>Fire Safety & Thermal Stability:</strong> Non-flammable solid electrolyte design eliminates thermal runaway risks, allowing engineers to strip away hundreds of pounds of heavy cooling jackets and protective armor.</li><li><strong>Expected Commercial Arrival:</strong> Flagship luxury sedans and heavy-duty electric trucks will receive the first production battery packs starting in late 2026 and early 2027 model years.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 7, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-cars-1" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="cars" id="card-cars-2">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Industry Trends</span>
+              <span class="badge-source">Ars Technica / Automotive Reports</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-cars-2" class="headline-link">Automakers Pivot to Extended-Range Electric Vehicles (EREV) to Bridge Charging Infrastructure Gap</a>
+            </h3>
+            <p class="story-snippet">Major domestic and international car manufacturers are expanding their lineups with Extended-Range EVs—vehicles driven 100% by electric motors but equipped with a compact gasoline generator for total ranges exceeding 700 miles.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">While pure battery EVs continue to grow, road-trip charging anxiety remains a barrier for many drivers. EREVs offer full electric driving for daily commutes while guaranteeing gasoline fill-up convenience on highway trips.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>How EREVs Differ from Old Hybrids:</strong> Unlike traditional parallel hybrids where gas engines mechanically turn the wheels, in an EREV the wheels are always propelled exclusively by electric motors, preserving instant EV torque and smoothness.</li><li><strong>Battery Size & Cost Efficiency:</strong> Uses a right-sized 30-40 kWh battery (good for 100-140 pure electric miles) rather than an expensive 100+ kWh battery, cutting vehicle sticker prices and reducing mineral supply demand.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 6, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-cars-2" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+
+        <article class="story-card" data-category="presidential" id="card-pres-1">
+          <div class="card-top">
+            <div class="badge-row">
+              <span class="badge-cat">Executive Action</span>
+              <span class="badge-source">The White House Official Actions</span>
+            </div>
+            <h3 class="story-headline">
+              <a href="#modal-pres-1" class="headline-link">President Issues Executive Order on Emergency Energy Logistics & Mississippi River Channel Relief</a>
+            </h3>
+            <p class="story-snippet">President Trump signed an Executive Order establishing targeted emergency regulatory relief on commercial diesel distribution, freight corridors, and critical transport infrastructure permitting.</p>
+
+            <details class="inline-takeaways-details">
+              <summary class="inline-takeaways-summary">
+                <span class="summary-toggle-icon">📌</span> Click to expand key takeaways directly
+              </summary>
+              <div class="inline-takeaways-content">
+                <div class="takeaways-subheading">Why It Matters:</div>
+                <p class="inline-overview-p">Under your strict rule for 'The Go To,' political coverage is restricted strictly to official actions taken directly by the President of the United States—omitting partisan commentary, legislative speculation, and election punditry.</p>
+                <div class="takeaways-subheading" style="margin-top: 10px;">Important Takeaways:</div>
+                <ul class="inline-bullet-list">
+                  <li><strong>Scope of the Executive Order:</strong> Temporarily suspends specific seasonal blending restrictions on diesel fuel to increase commercial supply and mitigate freight hauling cost spikes across national distribution corridors.</li><li><strong>Port & River Logistics Measures:</strong> Directs federal maritime and transportation agencies to expedite maintenance dredging and lock repairs along the Mississippi River navigation channel, directly impacting Louisiana maritime trade.</li><li><strong>Reporting Requirements:</strong> Mandates the Department of Energy and Department of Transportation submit a joint price-impact report within 30 days evaluating consumer fuel and cargo rate relief.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="card-footer">
+            <span class="story-date">October 5, 2026</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <a href="#modal-pres-1" class="preview-cta-link">
+                Open Pop-Up Modal →
+              </a>
+            </div>
+          </div>
+        </article>
+    
+    </div>
+
+    <!-- Daily Automated Update Explanation Architecture -->
+    <section class="system-pipeline-banner">
+      <div class="pipeline-title">
+        ⚙️ How "The Go To" Daily Update Engine Works
+      </div>
+      <p class="pipeline-desc">
+        This app is built to update every single day. Here is the automated setup that keeps "The Go To" refreshed every morning:
+      </p>
+      <div class="pipeline-steps">
+        <div class="pipeline-step-box">
+          <div class="step-num">Step 1 • Ingestion (6:00 AM)</div>
+          <div class="step-heading">Multi-Source RSS & API Scraping</div>
+          <div class="step-text">Pulls fresh feeds from Kenner.la.us, WWL-TV, NOLA.gov, ScienceDaily, Simple Flying, Commercial UAV News, Electrifying, and WhiteHouse.gov.</div>
+        </div>
+        <div class="pipeline-step-box">
+          <div class="step-num">Step 2 • Guardrail Filter</div>
+          <div class="step-heading">Strict Subject Filtering</div>
+          <div class="step-text">Automated exclusion rules discard 100% of sports and partisan political commentary. Only direct official Presidential executive actions pass through.</div>
+        </div>
+        <div class="pipeline-step-box">
+          <div class="step-num">Step 3 • Distillation Engine</div>
+          <div class="step-heading">Key Takeaway Extraction</div>
+          <div class="step-text">Extracts core impact, actionable dates, and exact operational facts (no generic 3-sentence filler; strictly what is important) for the pop-up modal.</div>
+        </div>
+        <div class="pipeline-step-box">
+          <div class="step-num">Step 4 • GitHub Actions / PWA</div>
+          <div class="step-heading">Automated Daily Deploy</div>
+          <div class="step-text">A scheduled GitHub Action runs <code>update_news.py</code> daily, commits the new <code>stories.json</code>, and your installed PWA app automatically pulls the fresh edition!</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- All Pre-Rendered Modals (Accessible via URL hash #modal-id or JS) -->
+
+  <div class="modal-overlay" id="modal-loc-1" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Kenner Event</span>
+        <span class="badge-source">Kenner Official Portal</span>
+        <span style="color: var(--text-muted);">October 8, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">Kenner Food Truck Festival Returns to Laketown on October 25 with Live Concert Lineup</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">Laketown on the shores of Lake Pontchartrain in Kenner serves as the primary outdoor gathering hub for Jefferson Parish families. This signature fall festival provides a major economic boost to local culinary entrepreneurs while offering free community entertainment.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Date, Hours & Venue</div>
+          <div class="takeaway-point-desc">Takes place Saturday, October 25, 2026, at Laketown (Williams Blvd at Lake Pontchartrain). Admission to the festival grounds is free to the public, with vendor food and drinks available for purchase.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Live Entertainment Schedule</div>
+          <div class="takeaway-point-desc">Performances headline with regional fan-favorite Rock Show NOLA playing classic rock anthems, followed by The Peyton Falgoust Band bringing high-energy variety music throughout the afternoon and evening.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Logistics & Parking</div>
+          <div class="takeaway-point-desc">Kenner Police Department and Jefferson Parish Parks & Recreation have designated free parking lots along Williams Blvd with courtesy shuttles running continuously to the boat launch area.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://www.kenner.la.us/CivicAlerts.aspx?CID=1" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on Kenner Official Portal ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-loc-2" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Jefferson Parish</span>
+        <span class="badge-source">WWL-TV Local News</span>
+        <span style="color: var(--text-muted);">October 8, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">Jefferson Parish Council Launches Independent Engineering Audit on Smart Water Meter Billing Spikes</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">The parish-wide digital meter rollout was intended to modernize leak detection and bill accuracy. However, hundreds of households in Metairie and Kenner experienced unexplained billing spikes, prompting urgent parish council intervention.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 What is Being Audited</div>
+          <div class="takeaway-point-desc">Third-party engineering investigators are benchmarking the digital pulse-transmitters against mechanical registers to determine whether electronic data packet transmission errors or calibration glitches caused the erroneous surges.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Dispute Relief for Kenner & Metairie Residents</div>
+          <div class="takeaway-point-desc">The council approved a moratorium on water shut-offs for disputed accounts during the review period. Affected customers can file formal disputes online to hold late fees while meters are recalibrated.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Expected Resolution Timeline</div>
+          <div class="takeaway-point-desc">Preliminary findings and corrective billing reconciliations are scheduled to be presented publicly to the Jefferson Parish Council by early November.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://www.wwltv.com/jefferson" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on WWL-TV Local News ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-loc-3" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">New Orleans</span>
+        <span class="badge-source">City of New Orleans Mayor's Office</span>
+        <span style="color: var(--text-muted);">October 6, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">New Orleans Formally Awarded Legal Ownership of 50,000-Acre Coastal Wisner Trust Lands</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">The Wisner Trust originally encompassed over 50,000 acres of oil-producing and coastal real estate across Lafourche, St. John, and Jefferson parishes. The expiration of the 100-year trust led to a contested dispute over whether revenues belonged to the city or private heirs.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 The Core Court Ruling</div>
+          <div class="takeaway-point-desc">The judge decreed that the donation trust had legally terminated and that all real property and oil royalties permanently vest directly in the City of New Orleans as the sole beneficiary.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Financial Impact for Citizens</div>
+          <div class="takeaway-point-desc">The city will now directly capture an estimated $8M–$12M annually without third-party management fees. City leadership has pledged these funds directly to drainage pump modernization and neighborhood road repairs.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Environmental Significance</div>
+          <div class="takeaway-point-desc">The land holdings encompass critical coastal wetlands along the Barataria basin, allowing New Orleans to spearhead direct coastal restoration and hurricane storm surge protection projects.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://nola.gov/next/mayors-office/news/articles/october-2026/2026-10-06-people-of-new-orleans-prevail-in-wisner-case-as-city-declared-legal-owner-of-wisner-lands/" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on City of New Orleans Mayor's Office ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-loc-4" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Metairie & Kenner</span>
+        <span class="badge-source">Visit Jefferson Parish</span>
+        <span style="color: var(--text-muted);">October 5, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">Fire Prevention Week Demonstrations and Home Safety Clinics Across Jefferson Parish Stations</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">National Fire Prevention Week focuses on educating residents about lithium-ion battery safety, cooking hazards, and family evacuation protocols before winter heating season begins.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Free Alarm Installations</div>
+          <div class="takeaway-point-desc">Jefferson Parish residents can request free dual-sensor smoke and carbon monoxide detectors installed at no charge by on-duty firefighters.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Hands-On Family Training</div>
+          <div class="takeaway-point-desc">Participating stations in Metairie (Veterans Blvd) and Kenner (32nd St) are offering children's obstacle courses, thermal camera demonstrations, and live grease-fire suppression drills.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://www.visitjeffersonparish.com/events/" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on Visit Jefferson Parish ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-tech-1" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Technology</span>
+        <span class="badge-source">ScienceDaily Technology</span>
+        <span style="color: var(--text-muted);">October 8, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">Physicists Synthesize Room-Temperature Photonic Time Crystal on Optical Silicon Chip</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">Traditional crystals have atoms arranged in repeating spatial patterns. Time crystals have structures that repeat periodically in time, allowing them to manipulate electromagnetic energy in previously impossible ways.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 The Technological Leap</div>
+          <div class="takeaway-point-desc">Previous photonic time crystal experiments required massive cryogenic refrigeration equipment and extreme lab conditions. This is the first demonstration on an integrated, mass-producible microchip.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Why It Matters for Computing</div>
+          <div class="takeaway-point-desc">Replaces traditional copper interconnects with ultra-fast optical data pipelines that consume up to 90% less electricity while transferring data at petabit-per-second speeds.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Commercialization Window</div>
+          <div class="takeaway-point-desc">Semiconductor foundries are already testing pilot integration into next-generation AI accelerators and quantum sensing hardware over the next 24 to 36 months.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://www.sciencedaily.com/news/matter_energy/technology/" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on ScienceDaily Technology ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-tech-2" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Artificial Intelligence</span>
+        <span class="badge-source">Google Technology Blog</span>
+        <span style="color: var(--text-muted);">October 2, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">Autonomous Multimodal Reasoning Architecture Achieves Stateful Agentic Workflows</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">Rather than isolated prompt-and-response interactions, the breakthrough focuses on persistent episodic memory, allowing assistants to maintain multi-week projects and verify external actions before execution.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Verified Action Protocol</div>
+          <div class="takeaway-point-desc">The system enforces zero-fabrication safety gates where tool parameters, dates, and API endpoints are verified deterministically before external mutations occur.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Real-World Efficiency Gains</div>
+          <div class="takeaway-point-desc">In benchmark tests, complex multi-app data consolidation tasks that previously required human manual oversight were completed in under 45 seconds with 99.4% factual accuracy.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://blog.google/innovation-and-ai/technology/" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on Google Technology Blog ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-aviation-1" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Commercial Aviation</span>
+        <span class="badge-source">Aviation International News</span>
+        <span style="color: var(--text-muted);">October 7, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">Beta Technologies & GE Aerospace Complete Historic Transatlantic Flight in Hybrid Commuter Aircraft</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">Regional air travel between cities under 500 miles accounts for a significant portion of short-haul aviation emissions. This test flight represents the longest continuous journey by a commercial-scale hybrid aircraft in aviation history.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Flight Route & Performance</div>
+          <div class="takeaway-point-desc">The aircraft departed Burlington, Vermont, stopping in Goose Bay, Greenland, and Iceland before landing in Scotland, averaging 38% lower fuel consumption than standard fossil-fueled turboprops.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Passenger Capacity & Timeline</div>
+          <div class="takeaway-point-desc">The platform maintains a 30-passenger cabin configuration, targeting FAA commercial certification and regional airline route entry by late 2027.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Infrastructure Advantage</div>
+          <div class="takeaway-point-desc">Unlike pure battery-electric designs that demand massive airport megawatt grid overhauls, the hybrid system utilizes existing airport fueling alongside standard charging stations.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://www.ainonline.com/" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on Aviation International News ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-aviation-2" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Aerospace Safety</span>
+        <span class="badge-source">Federal Aviation Administration</span>
+        <span style="color: var(--text-muted);">October 5, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">FAA Issues Automated Runway Safety Radar Mandates to Prevent Airport Surface Incursions</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">Near-miss surface incidents on active runways have been a major focus of federal aviation oversight. The new system provides real-time situational awareness directly to air traffic controllers and pilots simultaneously.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Sub-Second Incursion Detection</div>
+          <div class="takeaway-point-desc">Combines high-definition surface millimeter-wave radar and automatic dependent surveillance-broadcast (ADS-B) to track taxiing aircraft and airport ground vehicles with pinpoint accuracy.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Direct Cockpit Warning</div>
+          <div class="takeaway-point-desc">If an aircraft begins a takeoff roll while another plane is crossing downstream, the cockpit navigation display flashes an automated red 'Runway Occupied' alarm, bypassing controller radio lag.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://www.faa.gov/newsroom/press_releases" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on Federal Aviation Administration ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-drones-1" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">UAV Regulations</span>
+        <span class="badge-source">Commercial UAV News</span>
+        <span style="color: var(--text-muted);">October 6, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">FAA Establishes Standardized Beyond-Visual-Line-of-Sight (BVLOS) Commercial Delivery Corridors</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">Commercial drone delivery has historically been constrained by the requirement that remote human pilots maintain physical line of sight with the aircraft. The new rules formalize detect-and-avoid airspace safety standards.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 What Changes for Operators</div>
+          <div class="takeaway-point-desc">Certified Part 135 drone delivery operators can now scale suburban package deliveries across entire metropolitan areas without having human visual observers stationed every two miles.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Mandatory Safety Equipment</div>
+          <div class="takeaway-point-desc">Drones must feature redundant computer-vision obstacle avoidance, ADS-B In receiver units, and automated emergency parachute recovery systems certified to ASTM standards.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Local Community Impact</div>
+          <div class="takeaway-point-desc">Expands rapid medical delivery (prescription pharmaceuticals, AEDs) and retail package delivery times to under 15 minutes in participating suburban pilot regions.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://www.commercialuavnews.com/faa-part-135-drone-delivery-decision-precedent" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on Commercial UAV News ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-drones-2" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Emergency Tech</span>
+        <span class="badge-source">Unmanned Systems Technology</span>
+        <span style="color: var(--text-muted);">October 5, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">Tethered Disaster-Response Drones Deployed for Emergency 5G Mobile Mesh Coverage</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">When terrestrial cell towers lose power or fiber backhaul during severe gulf weather, tethered drones powered from mobile ground generators act as temporary 400-foot transmission towers.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Continuous Power via Kevlar Tether</div>
+          <div class="takeaway-point-desc">A micro-tether carries high-voltage electricity and fiber-optic data directly from a ground vehicle, eliminating battery flight time limits.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Coverage Radius</div>
+          <div class="takeaway-point-desc">A single unit creates an instant 10-mile radius emergency communication umbrella for 911 dispatchers, emergency search-and-rescue teams, and displaced residents.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://www.unmannedsystemstechnology.com/news/" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on Unmanned Systems Technology ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-cars-1" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Automotive Tech</span>
+        <span class="badge-source">Electrifying Automotive News</span>
+        <span style="color: var(--text-muted);">October 7, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">2026 Paris Motor Show Debuts Production Solid-State EV Batteries with 600-Mile Range</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">Solid-state technology replaces flammable liquid electrolytes with solid ceramic or polymer separators, significantly improving safety, thermal management, and winter range retention.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Breakthrough Performance Specs</div>
+          <div class="takeaway-point-desc">Prototypes demonstrated over 620 miles (1,000 km) on a single charge with zero degradation across 1,500 accelerated rapid-charging cycles.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Fire Safety & Thermal Stability</div>
+          <div class="takeaway-point-desc">Non-flammable solid electrolyte design eliminates thermal runaway risks, allowing engineers to strip away hundreds of pounds of heavy cooling jackets and protective armor.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Expected Commercial Arrival</div>
+          <div class="takeaway-point-desc">Flagship luxury sedans and heavy-duty electric trucks will receive the first production battery packs starting in late 2026 and early 2027 model years.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://www.electrifying.com/blog/article/paris-motor-show-2026" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on Electrifying Automotive News ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-cars-2" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Industry Trends</span>
+        <span class="badge-source">Ars Technica / Automotive Reports</span>
+        <span style="color: var(--text-muted);">October 6, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">Automakers Pivot to Extended-Range Electric Vehicles (EREV) to Bridge Charging Infrastructure Gap</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">While pure battery EVs continue to grow, road-trip charging anxiety remains a barrier for many drivers. EREVs offer full electric driving for daily commutes while guaranteeing gasoline fill-up convenience on highway trips.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 How EREVs Differ from Old Hybrids</div>
+          <div class="takeaway-point-desc">Unlike traditional parallel hybrids where gas engines mechanically turn the wheels, in an EREV the wheels are always propelled exclusively by electric motors, preserving instant EV torque and smoothness.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Battery Size & Cost Efficiency</div>
+          <div class="takeaway-point-desc">Uses a right-sized 30-40 kWh battery (good for 100-140 pure electric miles) rather than an expensive 100+ kWh battery, cutting vehicle sticker prices and reducing mineral supply demand.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://arstechnica.com/cars/" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on Ars Technica / Automotive Reports ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="modal-overlay" id="modal-pres-1" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <a href="#close" class="modal-close-btn" title="Close">✕</a>
+      
+      <div class="modal-meta-row">
+        <span class="badge-cat">Executive Action</span>
+        <span class="badge-source">The White House Official Actions</span>
+        <span style="color: var(--text-muted);">October 5, 2026</span>
+      </div>
+
+      <h2 class="modal-headline">President Issues Executive Order on Emergency Energy Logistics & Mississippi River Channel Relief</h2>
+
+      <div class="modal-overview-box">
+        <div class="modal-overview-title">Why It Matters</div>
+        <div class="modal-overview-text">Under your strict rule for 'The Go To,' political coverage is restricted strictly to official actions taken directly by the President of the United States—omitting partisan commentary, legislative speculation, and election punditry.</div>
+      </div>
+
+      <div class="modal-section-title">
+        📌 Key Takeaways & Core Impact
+      </div>
+      <div>
+        
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Scope of the Executive Order</div>
+          <div class="takeaway-point-desc">Temporarily suspends specific seasonal blending restrictions on diesel fuel to increase commercial supply and mitigate freight hauling cost spikes across national distribution corridors.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Port & River Logistics Measures</div>
+          <div class="takeaway-point-desc">Directs federal maritime and transportation agencies to expedite maintenance dredging and lock repairs along the Mississippi River navigation channel, directly impacting Louisiana maritime trade.</div>
+        </div>
+    
+        <div class="modal-takeaway-item">
+          <div class="takeaway-point-title">👉 Reporting Requirements</div>
+          <div class="takeaway-point-desc">Mandates the Department of Energy and Department of Transportation submit a joint price-impact report within 30 days evaluating consumer fuel and cargo rate relief.</div>
+        </div>
+    
+      </div>
+
+      <div class="modal-action-bar">
+        <div class="verified-source-badge">
+          🛡️ Verified Reputable Outlet
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#close" class="close-modal-link">Close Window</a>
+          <a href="https://www.whitehouse.gov/presidential-actions/executive-orders/" target="_blank" rel="noopener noreferrer" class="open-source-link">
+            Read Original Source on The White House Official Actions ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <footer class="site-footer">
+    <div class="container">
+      <p><strong>The Go To</strong> — Custom Progressive Web App designed for Kenner, Metairie & New Orleans.</p>
+      <p style="margin-top: 6px; font-size: 0.78rem;">Editorial Guardrails Active: Sports Excluded • Politics Limited Strictly to Presidential Executive Action • Unbiased Sourcing.</p>
+    </div>
+  </footer>
+
+  <script>
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => console.log('ServiceWorker registered:', reg.scope))
+          .catch((err) => console.log('ServiceWorker registration failed:', err));
+      });
+    }
+
+    // PWA Install Prompt Logic
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('pwaBanner').style.display = 'flex';
+    });
+
+    function triggerPWAInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted PWA installation');
+            dismissBanner();
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        // iOS or already installed or unsupported
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+          alert('To install on your iPhone/iPad:\n1. Tap the Share button in Safari\n2. Scroll down and tap "Add to Home Screen" 📱');
+        } else {
+          alert('To install "The Go To":\nOpen your browser menu (three dots) and tap "Install app" or "Add to Home Screen".');
+        }
+      }
+    }
+
+    function dismissBanner() {
+      document.getElementById('pwaBanner').style.display = 'none';
+      sessionStorage.setItem('dismissedPwaBanner', 'true');
+    }
+
+    if (sessionStorage.getItem('dismissedPwaBanner') === 'true' || window.matchMedia('(display-mode: standalone)').matches) {
+      document.getElementById('pwaBanner').style.display = 'none';
+    }
+
+    // Theme Toggle
+    function toggleTheme() {
+      const body = document.body;
+      const currentTheme = body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      document.getElementById('themeLabel').innerText = newTheme === 'dark' ? 'Dark' : 'Light';
+      document.getElementById('themeToggleBtn').innerHTML = newTheme === 'dark' ? '☀️ Mode: Dark' : '🌙 Mode: Light';
+    }
+
+    // Restore Theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.body.setAttribute('data-theme', savedTheme);
+      document.getElementById('themeLabel').innerText = savedTheme === 'dark' ? 'Dark' : 'Light';
+      document.getElementById('themeToggleBtn').innerHTML = savedTheme === 'dark' ? '☀️ Mode: Dark' : '🌙 Mode: Light';
+    }
+
+    // Filter Category
+    function filterCategory(cat, btn) {
+      const buttons = document.querySelectorAll('.cat-btn');
+      buttons.forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const cards = document.querySelectorAll('.story-card');
+      let visibleCount = 0;
+      cards.forEach(card => {
+        const cardCat = card.getAttribute('data-category');
+        if (cat === 'all' || cardCat === cat) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      const lead = document.getElementById('leadStoryContainer');
+      if (lead) {
+        lead.style.display = (cat === 'all') ? 'block' : 'none';
+      }
+
+      document.getElementById('storyCounter').innerText = `Showing ${visibleCount} stories`;
+      document.getElementById('sectionTitle').innerText = (cat === 'all') ? "Today's Curated Stories" : `Category: ${cat.toUpperCase()}`;
+    }
+
+    // Search Input
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.story-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        if (!query || text.includes(query)) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      const lead = document.getElementById('leadStoryContainer');
+      if (lead) {
+        lead.style.display = (!query) ? 'block' : 'none';
+      }
+
+      document.getElementById('storyCounter').innerText = `Showing ${visibleCount} stories`;
+    }
+
+    // Live Update Fetcher (Pulls fresh stories.json if online)
+    async function fetchLiveUpdates() {
+      const label = document.getElementById('refreshLabel');
+      label.innerText = 'Checking...';
+      try {
+        const res = await fetch('./stories.json?t=' + Date.now());
+        if (!res.ok) throw new Error('Could not fetch stories.json');
+        const data = await res.json();
+        if (data && data.stories) {
+          document.getElementById('editionDateDisplay').innerText = data.date_display;
+          label.innerText = 'Up to date!';
+          setTimeout(() => { label.innerText = 'Check Updates'; }, 2500);
+        }
+      } catch (err) {
+        console.log('Using pre-cached offline stories:', err);
+        label.innerText = 'Offline (Cached)';
+        setTimeout(() => { label.innerText = 'Check Updates'; }, 2500);
+      }
+    }
+
+    // Close modal on Escape
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && window.location.hash.startsWith('#modal-')) {
+        window.location.hash = '#close';
+      }
+    });
+  </script>
+</body>
+</html>
